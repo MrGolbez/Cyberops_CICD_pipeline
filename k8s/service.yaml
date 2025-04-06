@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: calculator-java8-service
+spec:
+  selector:
+    app: calculator-java8
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30008
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: calculator-java11-service
+spec:
+  selector:
+    app: calculator-java11
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30011
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: calculator-java17-service
+spec:
+  selector:
+    app: calculator-java17
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30017

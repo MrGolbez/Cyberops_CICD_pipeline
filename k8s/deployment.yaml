@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calculator-java8
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calculator-java8
+  template:
+    metadata:
+      labels:
+        app: calculator-java8
+    spec:
+      containers:
+        - name: calculator-java8
+          image: mrgolbez/calculator-java8:latest
+          ports:
+            - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calculator-java11
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calculator-java11
+  template:
+    metadata:
+      labels:
+        app: calculator-java11
+    spec:
+      containers:
+        - name: calculator-java11
+          image: mrgolbez/calculator-java11:latest
+          ports:
+            - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calculator-java17
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calculator-java17
+  template:
+    metadata:
+      labels:
+        app: calculator-java17
+    spec:
+      containers:
+        - name: calculator-java17
+          image: mrgolbez/calculator-java17:latest
+          ports:
+            - containerPort: 8080

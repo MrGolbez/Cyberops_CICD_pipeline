@@ -1,0 +1,4 @@
+FROM openjdk:17-jdk
+WORKDIR /app
+COPY target/calculator-app-1.0-SNAPSHOT.jar calculator.jar
+ENTRYPOINT ["java", "-jar", "calculator.jar"]
