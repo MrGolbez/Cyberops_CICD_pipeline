@@ -4,7 +4,7 @@ networks:
 
 services:
   jenkins:
-    image: jenkins/maven:latest
+    image: jenkins/jenkins:latest
     container_name: jenkins
     restart: unless-stopped
     ports:
@@ -18,6 +18,14 @@ services:
       - JAVA_OPTS=-Djava.awt.headless=true
     networks:
       - devops-network
+
+  maven-agent:
+      image: maven:3.8-jdk-11
+      container_name: maven-agent
+      networks:
+        - devops-network
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
 
   sonarqube:
     image: sonarqube:latest
