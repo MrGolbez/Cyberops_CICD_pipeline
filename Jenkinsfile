@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'maven-agent' }
+    agent any
 
     environment {
         DOCKERHUB_USER = 'mrgolbez'
@@ -26,6 +26,13 @@ pipeline {
             }
         }
 
+        stage('Code Coverage (JaCoCo)') {
+            steps {
+                sh 'mvn verify'
+                // JaCoCo report will be generated in target/site/jacoco/index.html
+            }
+        }
+
         stage('SonarQube Analysis') {
             environment {
                 SONARQUBE_ENV = credentials('sonarqube-token')
@@ -34,9 +41,11 @@ pipeline {
                 withSonarQubeEnv('SonarQube') {
                     sh """
                         mvn sonar:sonar \
-                        -Dsonar.projectKey=calculator-app \
-                        -Dsonar.host.url=http://sonarqube:9000 \
-                        -Dsonar.login=$SONARQUBE_ENV
+                          -Dsonar.projectKey=calculator-app \
+                          -Dsonar.host.url=http://sonarqube:9000 \
+                          -Dsonar.login=$SONARQUBE_ENV \
+                          -Dsonar.java.binaries=target/classes \
+                          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
                     """
                 }
             }
@@ -69,13 +78,16 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh """
-                    kubectl apply -f k8s/deployment.yaml
-                """
-                sh """
-                    kubectl apply -f k8s/services.yaml
-                """
+                sh 'kubectl apply -f k8s/deployment.yaml'
+                sh 'kubectl apply -f k8s/services.yaml'
             }
+        }
+    }
+
+    post {
+        always {
+            junit '**/target/surefire-reports/*.xml'
+            archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
         }
     }
 }
