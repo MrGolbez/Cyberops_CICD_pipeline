@@ -2,11 +2,16 @@ networks:
   devops-network:
     driver: bridge
 
+volumes:
+  jenkins_home:
+  postgres_data:
+
 services:
   jenkins:
-    image: jenkins/jenkins:latest
+    image: jenkins/jenkins:lts
     container_name: jenkins
     restart: unless-stopped
+    user: root
     ports:
       - "8080:8080"
       - "50000:50000"
@@ -18,14 +23,6 @@ services:
       - JAVA_OPTS=-Djava.awt.headless=true
     networks:
       - devops-network
-
-  maven-agent:
-      image: maven:3.8-jdk-11
-      container_name: maven-agent
-      networks:
-        - devops-network
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
 
   sonarqube:
     image: sonarqube:latest
@@ -52,7 +49,3 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - devops-network
-
-volumes:
-  jenkins_home:
-  postgres_data:

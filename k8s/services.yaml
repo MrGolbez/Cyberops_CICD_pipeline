@@ -4,12 +4,13 @@ metadata:
   name: calculator-java8-service
 spec:
   selector:
-    app: calculator-java8
-  type: NodePort
+    app: calculator
   ports:
-    - port: 8080
-      targetPort: 8080
-      nodePort: 30008
+    - name: java8
+      protocol: TCP
+      port: 8081
+      targetPort: 8081
+  type: NodePort
 
 ---
 apiVersion: v1
@@ -18,12 +19,13 @@ metadata:
   name: calculator-java11-service
 spec:
   selector:
-    app: calculator-java11
-  type: NodePort
+    app: calculator
   ports:
-    - port: 8080
-      targetPort: 8080
-      nodePort: 30011
+    - name: java11
+      protocol: TCP
+      port: 8082
+      targetPort: 8082
+  type: NodePort
 
 ---
 apiVersion: v1
@@ -32,9 +34,10 @@ metadata:
   name: calculator-java17-service
 spec:
   selector:
-    app: calculator-java17
-  type: NodePort
+    app: calculator
   ports:
-    - port: 8080
-      targetPort: 8080
-      nodePort: 30017
+    - name: java17
+      protocol: TCP
+      port: 8083
+      targetPort: 8083
+  type: NodePort
