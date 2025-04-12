@@ -17,6 +17,14 @@
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
+    <!-- Repositories section to ensure Maven Central is available -->
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- JUnit for testing -->
         <dependency>
@@ -47,37 +55,13 @@
                 </configuration>
             </plugin>
 
-            <!-- JaCoCo Plugin for Code Coverage -->
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.10</version>
-                <executions>
-                    <!-- Prepare JaCoCo agent for test phase -->
-                    <execution>
-                        <id>prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-
-                    <!-- Generate JaCoCo report after test phase -->
-                    <execution>
-                        <id>report</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!-- Docker Maven Plugin for building Docker images -->
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.37.0</version>
                 <executions>
+                    <!-- Build Java 8 Image -->
                     <execution>
                         <id>build-java8-image</id>
                         <phase>package</phase>
@@ -100,6 +84,7 @@
                         </configuration>
                     </execution>
 
+                    <!-- Build Java 11 Image -->
                     <execution>
                         <id>build-java11-image</id>
                         <phase>package</phase>
@@ -122,6 +107,7 @@
                         </configuration>
                     </execution>
 
+                    <!-- Build Java 17 Image -->
                     <execution>
                         <id>build-java17-image</id>
                         <phase>package</phase>
@@ -145,35 +131,57 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- SonarQube Maven Plugin for SonarQube Analysis -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.9.0.2155</version>
+                <configuration>
+                    <sonar.host.url>http://sonarqube:9000</sonar.host.url>
+                    <sonar.login>${env.SONARQUBE_TOKEN}</sonar.login>
+                    <sonar.projectKey>calculator-app</sonar.projectKey>
+                    <sonar.java.binaries>target/classes</sonar.java.binaries>
+                    <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
     <profiles>
         <profile>
-            <id>coverage</id>
+            <id>docker-build</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.10</version>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.37.0</version>
                         <executions>
+                            <!-- Build Docker images based on Dockerfiles -->
                             <execution>
-                                <id>prepare-agent</id>
+                                <id>build-docker-image</id>
+                                <phase>package</phase>
                                 <goals>
-                                    <goal>prepare-agent</goal>
+                                    <goal>build</goal>
                                 </goals>
-                            </execution>
-
-                            <execution>
-                                <id>report</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>report</goal>
-                                </goals>
+                                <configuration>
+                                    <images>
+                                        <image>
+                                            <name>mrgolbez/calculator-java8:${project.version}</name>
+                                            <build>
+                                                <from>openjdk:8-jdk</from>
+                                                <dockerFileDir>${project.basedir}</dockerFileDir>
+                                                <tags>
+                                                    <tag>${project.version}</tag>
+                                                </tags>
+                                            </build>
+                                        </image>
+                                    </images>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -181,5 +189,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>
