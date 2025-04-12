@@ -29,7 +29,6 @@ services:
       - KUBECONFIG=/root/.kube/config  # Set environment variable for kubectl to pick up the kubeconfig file
     networks:
       - devops-network
-    network_mode: "host"
 
   sonarqube:
     image: sonarqube:latest
