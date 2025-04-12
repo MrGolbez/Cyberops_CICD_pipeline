@@ -2,14 +2,21 @@ FROM jenkins/jenkins:lts
 
 USER root
 
+# Install Maven and Kubernetes CLI (kubectl)
 RUN apt-get update && \
     apt-get install -y maven && \
     apt-get clean
 
+# Install kubectl
 RUN curl -LO "https://dl.k8s.io/release/v1.27.0/bin/linux/amd64/kubectl" && \
     install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && \
     rm kubectl
 
-##RUN mvn -version && kubectl version --client ##Used to test my version and installation
+# Ensure the .kube directory exists and has proper permissions for the Jenkins user
+RUN mkdir -p /home/jenkins/.kube && \
+    chown -R jenkins:jenkins /home/jenkins/.kube
+
+# Verify installations
+RUN mvn -version && kubectl version --client
 
 USER jenkins
