@@ -29,7 +29,7 @@ pipeline {
         stage('Code Coverage (JaCoCo)') {
             steps {
                 sh 'mvn verify'
-                // JaCoCo report will be generated in target/site/jacoco/index.html
+                // JaCoCo file in target/site/jacoco/index.html
             }
         }
 
@@ -42,7 +42,7 @@ pipeline {
                     sh """
                         mvn sonar:sonar \
                           -Dsonar.projectKey=calculator-app \
-                          -Dsonar.host.url=http://sonarqube:9000 \
+                          -Dsonar.host.url=http://localhost:9000 \
                           -Dsonar.login=$SONARQUBE_ENV \
                           -Dsonar.java.binaries=target/classes \
                           -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
