@@ -19,9 +19,9 @@ services:
     container_name: jenkins
     restart: unless-stopped
     user: root
-    ports:
-      - "8080:8080"
-      - "50000:50000"
+    #ports: //unable to use ports services when setting network_mode to host
+     # - "8080:8080"
+      #- "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
